@@ -1,35 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:todoey_flutter/Form_Widgets/daily_form_individual.dart';
+import 'package:todoey_flutter/daily_framework.dart';
 
-// class ListTasks extends StatelessWidget {
-//   const ListTasks({
-//     Key? key,
-//   }) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView(
-//       children: const [
-//         TaskIndividual(
-//           oldValue: false,
-//           text: 'Hallo',
-//         ),
-//         TaskIndividual(
-//           oldValue: false,
-//           text: 'Love',
-//         ),
-//       ],
-//     );
-//   }
-// }
+class DailYProvider extends ChangeNotifier {
+  final List<DailYFrames> _dailys = [
+    DailYFrames(
+      createdTime: DateTime.now(),
+      title: 'Walk the Dog',
+    ),
+    DailYFrames(
+      createdTime: DateTime.now(),
+      title: 'Walk the Lady',
+    ),
+    DailYFrames(
+      createdTime: DateTime.now(),
+      title: 'Give Time to Family',
+    ),
+    DailYFrames(
+        createdTime: DateTime.now(),
+        title: 'Love All',
+        description:
+            'Hallo I am Debasis Sil. I would like you to know that I would like to get her in my life'),
+  ];
 
-// leading: ListView.builder(
-//   itemCount: listItems,
-//   itemBuilder: (BuildContext context, int index) {
-//     return Text(
-//       index.toString(),
-//     );
-//   },
-// ),
+  List<DailYFrames> get dailys =>
+      _dailys.where((daily) => daily.isDone == false).toList();
 
-class DailYListProvider extends ChangeNotifier {}
+  List<DailYFrames> get dailysCompleted =>
+      _dailys.where((daily) => daily.isDone == true).toList();
+
+  void addDaily(DailYFrames todo) {
+    _dailys.add(todo);
+
+    notifyListeners();
+  }
+
+  void removeDaily(DailYFrames todo) {
+    _dailys.remove(todo);
+
+    notifyListeners();
+  }
+
+  bool toggleDailyStatus(DailYFrames todo) {
+    todo.isDone = !todo.isDone;
+
+    notifyListeners();
+
+    return todo.isDone;
+  }
+
+  void updateDaily(DailYFrames todo, String title, String description) {
+    todo.title = title;
+    todo.description = description;
+
+    notifyListeners();
+  }
+}

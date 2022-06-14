@@ -1,17 +1,15 @@
-import 'package:flutter/material.dart';
-
 class DailYFramework {
   static const createdTime = 'createdTime';
 }
 
-class DailY {
+class DailYFrames {
   late DateTime createdTime;
   late String title;
   late String description;
   late String id;
   late bool isDone;
 
-  DailY({
+  DailYFrames({
     required this.createdTime,
     required this.title,
     this.description = '',

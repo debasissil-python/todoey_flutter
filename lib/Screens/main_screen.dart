@@ -1,85 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:todoey_flutter/Screens/task_bottom_screen.dart';
-import '../Form_Widgets/daily_list_all.dart';
+import 'package:provider/provider.dart';
+import 'package:todoey_flutter/Screens/bottom_screen.dart';
+import '../Form_Widgets/completed_list_widget.dart';
+import '../Form_Widgets/daily_list_widget.dart';
+import '../Provider/daily_provider.dart';
 
-class TasksScreen extends StatefulWidget {
-  const TasksScreen({Key? key}) : super(key: key);
+class MainScreen extends StatefulWidget {
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
-  State<TasksScreen> createState() => _TasksScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _TasksScreenState extends State<TasksScreen> {
+class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
-
   late Widget buildBottomSheet;
-
-  late String text;
-  late bool checkbox;
 
   @override
   Widget build(BuildContext context) {
     final tabs = [
-      const DailYListAll(),
+      const AllList(),
       const CompletedList(),
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.blue.shade400,
-      body: tabs[selectedIndex],
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueGrey.shade900,
-        child: const Icon(
-          Icons.add_circle_outline_outlined,
-          size: 30,
-        ),
-        onPressed: () {
-          showModalBottomSheet(
-            isScrollControlled: true,
-            context: context,
-            builder: (BuildContext context) => SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: const TaskBottomSheet(),
-              ),
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 15,
+    return SafeArea(
+      child: Scaffold(
         backgroundColor: Colors.blue.shade400,
-        unselectedItemColor: Colors.white.withOpacity(.7),
-        selectedItemColor: Colors.white,
-        unselectedFontSize: 16,
-        selectedFontSize: 20,
-        currentIndex: selectedIndex,
-        onTap: (index) => setState(() {
-          selectedIndex = index;
-        }),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fact_check_outlined),
-            label: 'DailY List',
+        body: tabs[selectedIndex],
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.blueGrey.shade900,
+          child: const Icon(
+            Icons.add_circle_outline_outlined,
+            size: 30,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.done_outline_rounded),
-            label: 'Completed',
-          ),
-        ],
+          onPressed: () {
+            showModalBottomSheet(
+              isScrollControlled: true,
+              context: context,
+              builder: (BuildContext context) => SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: const TaskBottomSheet(),
+                ),
+              ),
+            );
+          },
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          elevation: 15,
+          backgroundColor: Colors.blue.shade400,
+          unselectedItemColor: Colors.white.withOpacity(.7),
+          selectedItemColor: Colors.white,
+          unselectedFontSize: 16,
+          selectedFontSize: 20,
+          currentIndex: selectedIndex,
+          onTap: (index) => setState(() {
+            selectedIndex = index;
+          }),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.fact_check_outlined),
+              label: 'DailY List',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.done_outline_rounded),
+              label: 'Completed',
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class DailYListAll extends StatelessWidget {
-  const DailYListAll({
+class AllList extends StatelessWidget {
+  const AllList({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<DailYProvider>(context);
+    final dailyL = provider.dailys;
     // ignore: avoid_unnecessary_containers
     return Container(
       child: Column(
@@ -132,7 +135,7 @@ class DailYListAll extends StatelessWidget {
                       fontStyle: FontStyle.italic,
                     ),
                     children: <TextSpan>[
-                      TextSpan(text: 'Your own '),
+                      TextSpan(text: 'Your '),
                       TextSpan(
                         text: 'DailY List',
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -143,9 +146,9 @@ class DailYListAll extends StatelessWidget {
                 const SizedBox(
                   height: 15,
                 ),
-                const Text(
-                  '12 Tasks',
-                  style: TextStyle(
+                Text(
+                  dailyL.length.toString() + ' Tasks To Do',
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                     color: Colors.white,
@@ -156,7 +159,7 @@ class DailYListAll extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -164,9 +167,9 @@ class DailYListAll extends StatelessWidget {
                   topRight: Radius.circular(45),
                 ),
               ),
-              //child: const ListTasks(),
+              child: const DailYListWidget(),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -180,6 +183,8 @@ class CompletedList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //final provider = Provider.of<DailYProvider>(context);
+    //final dailyC = provider.dailys;
     // ignore: avoid_unnecessary_containers
     return Container(
       child: Column(
@@ -232,7 +237,7 @@ class CompletedList extends StatelessWidget {
                       fontStyle: FontStyle.italic,
                     ),
                     children: <TextSpan>[
-                      TextSpan(text: 'Your own '),
+                      TextSpan(text: 'Your '),
                       TextSpan(
                         text: 'Completed List',
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -244,14 +249,14 @@ class CompletedList extends StatelessWidget {
                 const SizedBox(
                   height: 15,
                 ),
-                const Text(
-                  '12 Tasks',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
-                ),
+                // Text(
+                //   dailyC.length.toString() + ' Completed Tasks',
+                //   style: const TextStyle(
+                //     fontWeight: FontWeight.bold,
+                //     fontSize: 15,
+                //     color: Colors.white,
+                //   ),
+                // ),
                 // const SizedBox(
                 //   height: 15,
                 // ),
@@ -268,7 +273,7 @@ class CompletedList extends StatelessWidget {
                   topRight: Radius.circular(45),
                 ),
               ),
-              //child: const ListTasks(),
+              child: const CompletedListWidget(),
             ),
           )
         ],
